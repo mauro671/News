@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="NewsOffline" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <title>NewsOffline</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --surface2: #1e1e1e;
+      --border: #2a2a2a;
+      --accent: #e8c87a;
+      --accent2: #c0392b;
+      --text: #f0ece4;
+      --muted: #888;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+```
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+/* HEADER */
+header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(10,10,10,0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: calc(var(--safe-top) + 14px) 20px 14px;
+}
+.header-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  max-width: 480px; margin: 0 auto;
+}
+.logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; letter-spacing: -0.5px; }
+.logo span { color: var(--accent); }
+.header-actions { display: flex; gap: 10px; align-items: center; }
+.icon-btn {
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--text); font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.icon-btn:active { transform: scale(0.92); background: var(--surface2); }
+
+/* TABS */
+.tabs-wrap { background: var(--bg); border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
+.tabs-wrap::-webkit-scrollbar { display: none; }
+.tabs { display: flex; padding: 0 16px; max-width: 480px; margin: 0 auto; }
+.tab {
+  flex-shrink: 0; padding: 12px 14px; font-size: 13px; font-weight: 500;
+  color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* OFFLINE BANNER */
+.offline-banner { display: none; background: var(--accent2); color: #fff; text-align: center; padding: 8px 16px; font-size: 13px; font-weight: 500; }
+body.offline .offline-banner { display: block; }
+
+/* MAIN */
+main { max-width: 480px; margin: 0 auto; padding: 0 0 calc(var(--safe-bottom) + 80px); }
+
+/* FEATURED */
+.featured { padding: 16px; }
+.featured-card {
+  background: var(--surface); border-radius: 16px; overflow: hidden;
+  border: 1px solid var(--border); cursor: pointer; transition: transform 0.18s;
+  -webkit-tap-highlight-color: transparent;
+}
+.featured-card:active { transform: scale(0.98); }
+.featured-img {
+  width: 100%; height: 200px;
+  background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+  display: flex; align-items: center; justify-content: center; font-size: 60px;
+}
+.featured-body { padding: 16px; }
+.featured-tag {
+  display: inline-block; background: var(--accent); color: #000;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 4px; margin-bottom: 10px;
+}
+.featured-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 10px; }
+.featured-meta { font-size: 12px; color: var(--muted); display: flex; gap: 10px; }
+
+/* SECTION TITLE */
+.section-title {
+  font-family: 'Playfair Display', serif; font-size: 13px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); padding: 4px 16px 12px;
+}
+
+/* NEWS LIST */
+.news-list { padding: 0 16px; display: flex; flex-direction: column; gap: 1px; }
+.news-item {
+  display: flex; gap: 14px; align-items: flex-start; padding: 14px 0;
+  border-bottom: 1px solid var(--border); cursor: pointer;
+  -webkit-tap-highlight-color: transparent; transition: opacity 0.15s;
+}
+.news-item:active { opacity: 0.7; }
+.news-item:last-child { border-bottom: none; }
+.news-thumb {
+  width: 76px; height: 76px; border-radius: 10px; flex-shrink: 0;
+  background: var(--surface2); display: flex; align-items: center;
+  justify-content: center; font-size: 28px; overflow: hidden;
+}
+.news-content { flex: 1; min-width: 0; }
+.news-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; }
+.news-title {
+  font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700;
+  line-height: 1.35; margin-bottom: 6px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.news-meta { font-size: 11px; color: var(--muted); display: flex; gap: 8px; align-items: center; }
+.saved-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; display: inline-block; }
+
+/* BOTTOM NAV */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: rgba(10,10,10,0.95); backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border);
+  padding-bottom: var(--safe-bottom); z-index: 100;
+}
+.nav-inner { display: flex; max-width: 480px; margin: 0 auto; }
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  gap: 4px; padding: 10px 0; cursor: pointer;
+  -webkit-tap-highlight-color: transparent; transition: color 0.15s;
+  color: var(--muted); font-size: 10px; font-weight: 500; letter-spacing: 0.3px;
+}
+.nav-item.active { color: var(--accent); }
+.nav-icon { font-size: 20px; line-height: 1; }
+
+/* READER OVERLAY */
+.reader-overlay {
+  position: fixed; inset: 0; z-index: 200; background: var(--bg);
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.32,0,0.67,0);
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+.reader-overlay.open { transform: translateY(0); transition: transform 0.35s cubic-bezier(0.33,1,0.68,1); }
+.reader-header {
+  position: sticky; top: 0;
+  background: rgba(10,10,10,0.92); backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border);
+  padding: calc(var(--safe-top) + 14px) 16px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.reader-back { display: flex; align-items: center; gap: 6px; font-size: 15px; color: var(--accent); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.reader-body { padding: 24px 20px; max-width: 480px; margin: 0 auto; }
+.reader-tag { display: inline-block; background: var(--accent); color: #000; font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; margin-bottom: 16px; }
+.reader-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; line-height: 1.25; margin-bottom: 12px; }
+.reader-meta { font-size: 13px; color: var(--muted); margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+.reader-img { width: 100%; height: 220px; background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 80px; margin-bottom: 24px; }
+.reader-content { font-size: 17px; line-height: 1.7; color: #d0cbc2; font-weight: 300; }
+.reader-content p { margin-bottom: 16px; }
+.reader-actions { display: flex; gap: 12px; margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--border); }
+.btn { flex: 1; padding: 14px; border-radius: 12px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: transform 0.1s, opacity 0.15s; -webkit-tap-highlight-color: transparent; font-family: 'DM Sans', sans-serif; }
+.btn:active { transform: scale(0.96); opacity: 0.85; }
+.btn-primary { background: var(--accent); color: #000; }
+.btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+
+/* SOURCES */
+.add-rss-panel { padding: 16px; }
+.rss-input-wrap { display: flex; gap: 10px; margin-bottom: 16px; }
+.rss-input { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-size: 14px; font-family: 'DM Sans', sans-serif; outline: none; }
+.rss-input:focus { border-color: var(--accent); }
+.rss-input::placeholder { color: var(--muted); }
+.source-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--muted); cursor: pointer; transition: border-color 0.15s, color 0.15s; -webkit-tap-highlight-color: transparent; }
+.chip.active { border-color: var(--accent); color: var(--accent); }
+
+/* DOWNLOAD PROGRESS */
+.dl-overlay {
+  position: fixed; inset: 0; z-index: 400;
+  background: rgba(10,10,10,0.85); backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+}
+.dl-overlay.show { opacity: 1; pointer-events: all; }
+.dl-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 32px 28px; width: min(320px, 90vw); text-align: center; }
+.dl-icon { font-size: 44px; margin-bottom: 14px; }
+.dl-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.dl-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+.dl-bar-wrap { background: var(--surface2); border-radius: 10px; height: 8px; overflow: hidden; margin-bottom: 10px; }
+.dl-bar { height: 100%; background: var(--accent); border-radius: 10px; width: 0%; transition: width 0.3s ease; }
+.dl-count { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+.dl-close { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: 10px; padding: 10px 24px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; display: none; -webkit-tap-highlight-color: transparent; }
+.dl-close.show { display: inline-block; }
+
+/* INSTALL BANNER */
+.install-banner { margin: 12px 16px; background: linear-gradient(135deg,#1a1410,#221a0a); border: 1px solid var(--accent); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; }
+.install-icon { font-size: 32px; flex-shrink: 0; }
+.install-text { flex: 1; }
+.install-text strong { font-size: 14px; color: var(--accent); display: block; margin-bottom: 3px; }
+.install-text span { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.install-close { color: var(--muted); font-size: 18px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: calc(var(--safe-bottom) + 80px);
+  left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--surface2); color: var(--text); padding: 10px 20px;
+  border-radius: 20px; font-size: 13px; font-weight: 500;
+  border: 1px solid var(--border); opacity: 0;
+  transition: opacity 0.2s, transform 0.2s; z-index: 300; white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+```
+
+  </style>
+</head>
+<body>
+
+<div class="offline-banner">📡 Offline — Stai leggendo articoli salvati</div>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">News<span>·</span>Offline</div>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="refreshFeed()" title="Aggiorna">⟳</button>
+      <button class="icon-btn" id="download-all-btn" onclick="downloadAllOffline()" title="Scarica tutto offline">⬇</button>
+      <button class="icon-btn" onclick="showToast('⚙️ Impostazioni in arrivo')">⚙</button>
+    </div>
+  </div>
+</header>
+
+<div class="tabs-wrap">
+  <div class="tabs" id="tabs"></div>
+</div>
+
+<main id="main-content">
+  <div id="install-banner-wrap"></div>
+  <div id="content-area"></div>
+</main>
+
+<nav class="bottom-nav">
+  <div class="nav-inner">
+    <div class="nav-item active" onclick="switchNav(this,'home')"><div class="nav-icon">🏠</div>Home</div>
+    <div class="nav-item" onclick="switchNav(this,'saved')"><div class="nav-icon">🔖</div>Salvati</div>
+    <div class="nav-item" onclick="switchNav(this,'sources')"><div class="nav-icon">📡</div>Fonti</div>
+  </div>
+</nav>
+
+<div class="reader-overlay" id="reader">
+  <div class="reader-header">
+    <div class="reader-back" onclick="closeReader()">← Indietro</div>
+    <button class="icon-btn" id="reader-save-btn" onclick="toggleSaveCurrentArticle()">🔖</button>
+  </div>
+  <div class="reader-body" id="reader-body"></div>
+</div>
+
+<div class="dl-overlay" id="dl-overlay">
+  <div class="dl-card">
+    <div class="dl-icon" id="dl-icon">⬇</div>
+    <div class="dl-title" id="dl-title">Scaricando articoli…</div>
+    <div class="dl-sub" id="dl-sub">Salvataggio per lettura offline</div>
+    <div class="dl-bar-wrap"><div class="dl-bar" id="dl-bar"></div></div>
+    <div class="dl-count" id="dl-count">0 / 0 articoli</div>
+    <button class="dl-close" id="dl-close" onclick="closeDlOverlay()">Fatto ✓</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CATEGORIES = ['Tutto','Tecnologia','Italia','Mondo','Economia','Scienza','Sport'];
+
+const SAMPLE_ARTICLES = [
+  { id:1, cat:'Tecnologia', emoji:'🤖', title:"L'AI generativa trasforma il modo di lavorare in azienda", source:'TechItalia', time:'2h fa', read:'4 min', body:"L'intelligenza artificiale generativa sta ridefinendo i processi lavorativi in migliaia di aziende italiane ed europee. Strumenti come assistenti AI, generatori di codice e sistemi di sintesi documentale vengono adottati a ritmi mai visti prima.\n\nSecondo un'analisi recente, il 62% delle imprese con più di 50 dipendenti ha già integrato almeno uno strumento AI nelle proprie operazioni quotidiane. La produttività media è aumentata del 23% nei team che utilizzano questi strumenti sistematicamente.\n\nLe resistenze esistono, soprattutto nelle fasce più senior del management, ma la pressione competitiva sta accelerando l'adozione anche nei settori tradizionalmente più conservativi come la pubblica amministrazione e i servizi finanziari.\n\nIl dibattito sull'impatto occupazionale rimane aperto: i dati mostrano che, almeno nel breve periodo, l'AI crea più posizioni di quante ne elimini, sebbene di natura radicalmente diversa." },
+  { id:2, cat:'Italia', emoji:'🇮🇹', title:'Piano nazionale per la banda ultralarga: nuove scadenze e fondi PNRR', source:'CorriereDigitale', time:'4h fa', read:'3 min', body:"Il governo italiano ha annunciato un aggiornamento al piano per la banda ultralarga, rivedendo le scadenze di copertura e allocando ulteriori risorse dal PNRR per accelerare i lavori nelle aree bianche.\n\nL'obiettivo rimane portare la connettività gigabit al 100% del territorio entro il 2026, ma le stime più realistiche parlano di un 85-90% raggiungibile entro quella data. Le aree montane e i piccoli comuni restano le sfide principali.\n\nOpen Fiber e TIM continuano a essere i principali operatori coinvolti, con un crescente ruolo di operatori locali per le zone più remote. Il completamento delle infrastrutture passive è atteso entro il primo semestre del prossimo anno." },
+  { id:3, cat:'Mondo', emoji:'🌍', title:'Summit G7: accordo sul clima e nuovi impegni per le rinnovabili', source:'GlobalNews', time:'5h fa', read:'5 min', body:"I leader del G7 hanno raggiunto un accordo storico durante il vertice di questa settimana, impegnandosi ad accelerare la transizione verso le energie rinnovabili con obiettivi più ambiziosi rispetto agli accordi precedenti.\n\nL'accordo prevede di triplicare la capacità installata di energia solare ed eolica entro il 2030 rispetto ai livelli attuali. Saranno stanziati complessivamente 600 miliardi di dollari in finanziamenti pubblici e garanzie per attrarre investimenti privati nei paesi in via di sviluppo.\n\nLa Cina, pur non facendo parte del G7, ha inviato segnali di apertura al dialogo, aprendo la possibilità di un accordo bilaterale più ampio. Gli analisti restano cauti sulla reale implementazione degli impegni presi." },
+  { id:4, cat:'Economia', emoji:'📈', title:'Borsa italiana: FTSE MIB ai massimi da cinque anni', source:'IlSole24h', time:'6h fa', read:'2 min', body:"Piazza Affari ha chiuso la seduta con un rialzo significativo, portando il FTSE MIB ai livelli più alti degli ultimi cinque anni. Il settore bancario e quello energetico hanno guidato i guadagni della giornata.\n\nGli analisti attribuiscono la performance positiva a una combinazione di dati macroeconomici migliori delle attese e all'ottimismo degli investitori riguardo alle prossime decisioni della BCE sui tassi di interesse.\n\nL'euro ha guadagnato terreno sul dollaro, mentre lo spread BTP-Bund si è attestato sotto i 120 punti base per la prima volta in diversi mesi, segnale di ritrovata fiducia dei mercati nei confronti del debito italiano." },
+  { id:5, cat:'Scienza', emoji:'🔬', title:'Nuova scoperta sulla plasticità cerebrale apre scenari per la neuroriabilitazione', source:'ScienzaOggi', time:'8h fa', read:'4 min', body:"Un team di ricercatori dell'Università di Bologna ha pubblicato su Nature Neuroscience una ricerca che potrebbe rivoluzionare i protocolli di neuroriabilitazione per pazienti con danni cerebrali acquisiti.\n\nLo studio dimostra che determinate frequenze di stimolazione magnetica transcranica, combinate con sessioni di apprendimento motorio intensive, possono indurre la formazione di nuove connessioni sinaptiche anche in cervelli adulti con lesioni consolidate.\n\nI risultati preliminari sui pazienti coinvolti nella sperimentazione mostrano miglioramenti significativi nelle funzioni motorie anche a 12 mesi dall'intervento. Il protocollo verrà ora testato su una coorte più ampia in sette centri clinici europei." },
+  { id:6, cat:'Sport', emoji:'⚽', title:'Serie A: la corsa scudetto entra nel vivo con tre squadre in tre punti', source:'SportItalia', time:'10h fa', read:'3 min', body:"La classifica di Serie A non è mai stata così equilibrata a questo punto della stagione. Tre squadre separate da soli tre punti con dieci giornate al termine: uno scenario che promette un finale di campionato ad alta tensione.\n\nL'Inter, dopo il pareggio di domenica, vede le rivali avvicinarsi pericolosamente. Il Milan ha vinto le ultime quattro partite consecutive e sembra aver trovato la continuità che le mancava. La Juventus, più discontinua, rimane però temibile nelle gare secche.\n\nI prossimi scontri diretti potrebbero essere decisivi: tre derby e due scontri diretti nelle ultime dieci giornate renderanno quasi impossibile un distacco netto in classifica prima dell'ultimo mese." },
+  { id:7, cat:'Tecnologia', emoji:'🚀', title:"Satellite europeo per l'osservazione della Terra: prime immagini straordinarie", source:'SpazioEU', time:'12h fa', read:'3 min', body:"Il nuovo satellite dell'ESA dedicato all'osservazione della Terra ha trasmesso le prime immagini ad alta risoluzione, superando le aspettative degli ingegneri e degli scienziati coinvolti nel progetto.\n\nLa risoluzione spaziale di 30 centimetri per pixel permette di identificare oggetti a terra con un dettaglio senza precedenti per un satellite civile europeo. Le immagini saranno utilizzate per il monitoraggio ambientale, la gestione agricola di precisione e il supporto alle emergenze.\n\nL'Italia è tra i principali contributori al progetto, con significative componenti hardware sviluppate da aziende del comparto spaziale nazionale. I dati saranno resi disponibili gratuitamente alle amministrazioni pubbliche europee." },
+];
+
+let savedIds = JSON.parse(localStorage.getItem('saved') || '[]');
+let cachedArticles = JSON.parse(localStorage.getItem('cached') || 'null') || SAMPLE_ARTICLES;
+let currentCat = 'Tutto';
+let currentNav = 'home';
+let currentArticle = null;
+
+function init() {
+  renderTabs();
+  renderContent();
+  checkInstallBanner();
+  checkOffline();
+  window.addEventListener('online', checkOffline);
+  window.addEventListener('offline', checkOffline);
+}
+
+function checkOffline() {
+  document.body.classList.toggle('offline', !navigator.onLine);
+}
+
+function renderTabs() {
+  document.getElementById('tabs').innerHTML = CATEGORIES.map(c =>
+    `<div class="tab${c===currentCat?' active':''}" onclick="selectCat('${c}')">${c}</div>`
+  ).join('');
+}
+
+function selectCat(cat) { currentCat = cat; renderTabs(); renderContent(); }
+
+function switchNav(el, nav) {
+  document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  currentNav = nav;
+  document.querySelector('.tabs-wrap').style.display = nav==='home' ? '' : 'none';
+  renderContent();
+}
+
+function renderContent() {
+  const area = document.getElementById('content-area');
+  if (currentNav === 'saved') { renderSaved(area); return; }
+  if (currentNav === 'sources') { renderSources(area); return; }
+  renderHome(area);
+}
+
+function getFiltered() {
+  return currentCat === 'Tutto' ? cachedArticles : cachedArticles.filter(a => a.cat === currentCat);
+}
+
+function renderHome(area) {
+  const articles = getFiltered();
+  if (!articles.length) { area.innerHTML = '<p style="text-align:center;padding:40px;color:var(--muted)">Nessun articolo</p>'; return; }
+  const [first, ...rest] = articles;
+  area.innerHTML = `
+    <div class="featured">
+      <div class="featured-card" onclick="openReader(${first.id})">
+        <div class="featured-img">${first.emoji}</div>
+        <div class="featured-body">
+          <div class="featured-tag">${first.cat}</div>
+          <div class="featured-title">${first.title}</div>
+          <div class="featured-meta"><span>${first.source}</span><span>·</span><span>${first.time}</span><span>·</span><span>${first.read}</span></div>
+        </div>
+      </div>
+    </div>
+    ${rest.length ? `<div class="section-title">Ultime notizie</div><div class="news-list">${rest.map(a => newsItemHTML(a)).join('')}</div>` : ''}
+  `;
+}
+
+function newsItemHTML(a) {
+  const isSaved = savedIds.includes(a.id);
+  return `<div class="news-item" onclick="openReader(${a.id})">
+    <div class="news-thumb">${a.emoji}</div>
+    <div class="news-content">
+      <div class="news-tag">${a.cat}</div>
+      <div class="news-title">${a.title}</div>
+      <div class="news-meta"><span>${a.source}</span><span>·</span><span>${a.time}</span>${isSaved ? '<span class="saved-dot"></span>' : ''}</div>
+    </div>
+  </div>`;
+}
+
+function renderSaved(area) {
+  const saved = cachedArticles.filter(a => savedIds.includes(a.id));
+  if (!saved.length) {
+    area.innerHTML = '<div style="text-align:center;padding:60px 20px;color:var(--muted)"><div style="font-size:40px;margin-bottom:12px">🔖</div><div style="font-size:15px">Nessun articolo salvato</div><div style="font-size:13px;margin-top:6px">Premi ⬇ per scaricare tutto offline</div></div>';
+    return;
+  }
+  area.innerHTML = `<div class="section-title">Articoli salvati (${saved.length})</div><div class="news-list">${saved.map(a => newsItemHTML(a)).join('')}</div>`;
+}
+
+function renderSources(area) {
+  area.innerHTML = `
+    <div class="add-rss-panel">
+      <div class="section-title" style="padding:0 0 12px">Aggiungi fonte RSS</div>
+      <div class="rss-input-wrap">
+        <input class="rss-input" id="rss-url" type="url" placeholder="https://esempio.com/feed.rss" />
+        <button class="icon-btn" onclick="addRSS()" style="width:44px;height:44px;border-radius:10px;background:var(--accent);color:#000;border:none;font-size:18px">+</button>
+      </div>
+      <div class="section-title" style="padding:0 0 10px">Fonti consigliate</div>
+      <div class="source-chips">
+        ${['ANSA','Repubblica','Corriere','Il Sole 24 Ore','La Stampa','TechCrunch','Wired IT','BBC News'].map(s =>
+          `<div class="chip" onclick="toggleChip(this,'${s}')">${s}</div>`
+        ).join('')}
+      </div>
+    </div>`;
+}
+
+function addRSS() {
+  const val = document.getElementById('rss-url').value.trim();
+  if (!val) return;
+  showToast('📡 Fonte aggiunta! (simulato)');
+  document.getElementById('rss-url').value = '';
+}
+
+function toggleChip(el, src) {
+  el.classList.toggle('active');
+  showToast(el.classList.contains('active') ? `✅ ${src} aggiunto` : `❌ ${src} rimosso`);
+}
+
+function openReader(id) {
+  currentArticle = cachedArticles.find(a => a.id === id);
+  if (!currentArticle) return;
+  const isSaved = savedIds.includes(id);
+  document.getElementById('reader-save-btn').textContent = isSaved ? '✅' : '🔖';
+  document.getElementById('reader-body').innerHTML = `
+    <div class="reader-tag">${currentArticle.cat}</div>
+    <div class="reader-title">${currentArticle.title}</div>
+    <div class="reader-meta">${currentArticle.source} · ${currentArticle.time} · ${currentArticle.read} di lettura</div>
+    <div class="reader-img">${currentArticle.emoji}</div>
+    <div class="reader-content">${currentArticle.body.split('\n\n').map(p=>`<p>${p}</p>`).join('')}</div>
+    <div class="reader-actions">
+      <button class="btn btn-primary" onclick="toggleSaveCurrentArticle()">🔖 ${isSaved ? 'Rimuovi' : 'Salva offline'}</button>
+      <button class="btn btn-secondary" onclick="shareArticle()">⬆ Condividi</button>
+    </div>`;
+  document.getElementById('reader').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeReader() {
+  document.getElementById('reader').classList.remove('open');
+  document.body.style.overflow = '';
+  setTimeout(() => renderContent(), 300);
+}
+
+function toggleSaveCurrentArticle() {
+  if (!currentArticle) return;
+  const id = currentArticle.id;
+  if (savedIds.includes(id)) {
+    savedIds = savedIds.filter(x => x !== id);
+    showToast('🗑 Rimosso dai salvati');
+  } else {
+    savedIds.push(id);
+    showToast('🔖 Salvato per la lettura offline');
+  }
+  localStorage.setItem('saved', JSON.stringify(savedIds));
+  document.getElementById('reader-save-btn').textContent = savedIds.includes(id) ? '✅' : '🔖';
+}
+
+function shareArticle() {
+  if (navigator.share && currentArticle) {
+    navigator.share({ title: currentArticle.title, text: currentArticle.title }).catch(() => {});
+  } else {
+    showToast('📋 Link copiato!');
+  }
+}
+
+function refreshFeed() {
+  if (!navigator.onLine) { showToast('📡 Offline — impossibile aggiornare'); return; }
+  showToast('⟳ Aggiornamento in corso…');
+  setTimeout(() => {
+    cachedArticles = SAMPLE_ARTICLES;
+    localStorage.setItem('cached', JSON.stringify(cachedArticles));
+    renderContent();
+    showToast('✅ Feed aggiornato!');
+  }, 1500);
+}
+
+async function downloadAllOffline() {
+  if (!navigator.onLine) { showToast('📡 Sei offline — impossibile scaricare'); return; }
+  const articles = cachedArticles;
+  const total = articles.length;
+  if (!total) { showToast('Nessun articolo da scaricare'); return; }
+
+  const overlay  = document.getElementById('dl-overlay');
+  const bar      = document.getElementById('dl-bar');
+  const count    = document.getElementById('dl-count');
+  const title    = document.getElementById('dl-title');
+  const sub      = document.getElementById('dl-sub');
+  const icon     = document.getElementById('dl-icon');
+  const closeBtn = document.getElementById('dl-close');
+
+  icon.textContent = '⬇';
+  title.textContent = 'Scaricando articoli…';
+  sub.textContent = 'Salvataggio per lettura offline';
+  bar.style.width = '0%';
+  bar.style.background = 'var(--accent)';
+  count.textContent = `0 / ${total} articoli`;
+  closeBtn.classList.remove('show');
+  overlay.classList.add('show');
+
+  let done = 0;
+  const alreadySaved = new Set(savedIds);
+
+  for (const article of articles) {
+    await delay(180 + Math.random() * 120);
+    localStorage.setItem(`article_${article.id}`, JSON.stringify(article));
+    alreadySaved.add(article.id);
+    done++;
+    bar.style.width = Math.round((done / total) * 100) + '%';
+    count.textContent = `${done} / ${total} articoli`;
+  }
+
+  savedIds = [...alreadySaved];
+  localStorage.setItem('saved', JSON.stringify(savedIds));
+
+  icon.textContent = '✅';
+  title.textContent = 'Tutto salvato!';
+  sub.textContent = `${total} articoli disponibili offline`;
+  bar.style.width = '100%';
+  bar.style.background = '#4caf50';
+  closeBtn.classList.add('show');
+  renderContent();
+}
+
+function closeDlOverlay() {
+  document.getElementById('dl-overlay').classList.remove('show');
+  showToast(`🔖 ${savedIds.length} articoli pronti offline`);
+}
+
+function delay(ms) { return new Promise(res => setTimeout(res, ms)); }
+
+function checkInstallBanner() {
+  const dismissed = localStorage.getItem('install-dismissed');
+  const isStandalone = window.navigator.standalone;
+  if (!dismissed && !isStandalone) {
+    document.getElementById('install-banner-wrap').innerHTML = `
+      <div class="install-banner">
+        <div class="install-icon">📲</div>
+        <div class="install-text">
+          <strong>Installa come App</strong>
+          <span>Tocca <strong>Condividi ↑</strong> → <strong>"Aggiungi a schermata Home"</strong></span>
+        </div>
+        <div class="install-close" onclick="dismissInstall()">✕</div>
+      </div>`;
+  }
+}
+
+function dismissInstall() {
+  localStorage.setItem('install-dismissed', '1');
+  document.getElementById('install-banner-wrap').innerHTML = '';
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+init();
+</script>
+
+</body>
+</html>
