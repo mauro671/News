@@ -708,9 +708,11 @@ const RSS_SOURCES = [
 
 async function fetchRSSSource(source, startId) {
   const proxies = [
-    `https://corsproxy.io/?${encodeURIComponent(source.url)}`,
+    `https://corsproxy.io/?url=${encodeURIComponent(source.url)}`,
     `https://api.allorigins.win/raw?url=${encodeURIComponent(source.url)}`,
+    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(source.url)}`,
   ];
+
   for (const proxyUrl of proxies) {
     try {
       const res = await fetch(proxyUrl);
@@ -720,10 +722,10 @@ async function fetchRSSSource(source, startId) {
       const articles = parseRawXML(text, source, startId);
       if (articles.length > 0) return articles;
     } catch(e) {
-      // Silently ignore — proxy bloccato o CORS
+      // Silently ignore
     }
   }
-  return []; // Mai throw — restituisce array vuoto se tutto fallisce
+  return [];
 }
 
 function parseRawXML(xmlStr, source, startId) {
