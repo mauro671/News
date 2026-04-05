@@ -99,37 +99,37 @@ main { max-width: 480px; margin: 0 auto; padding: 0 0 calc(var(--safe-bottom) + 
   font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
   padding: 3px 8px; border-radius: 4px; margin-bottom: 10px;
 }
-.featured-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 10px; }
-.featured-meta { font-size: 12px; color: var(--muted); display: flex; gap: 10px; }
+.featured-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; line-height: 1.3; margin-bottom: 10px; }
+.featured-meta { font-size: 14px; color: var(--muted); display: flex; gap: 10px; }
 
 /* SECTION TITLE */
 .section-title {
-  font-family: 'Playfair Display', serif; font-size: 13px; font-weight: 700;
+  font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 700;
   letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); padding: 4px 16px 12px;
 }
 
 /* NEWS LIST */
 .news-list { padding: 0 16px; display: flex; flex-direction: column; gap: 1px; }
 .news-item {
-  display: flex; gap: 14px; align-items: flex-start; padding: 14px 0;
+  display: flex; gap: 14px; align-items: flex-start; padding: 16px 0;
   border-bottom: 1px solid var(--border); cursor: pointer;
   -webkit-tap-highlight-color: transparent; transition: opacity 0.15s;
 }
 .news-item:active { opacity: 0.7; }
 .news-item:last-child { border-bottom: none; }
 .news-thumb {
-  width: 76px; height: 76px; border-radius: 10px; flex-shrink: 0;
+  width: 84px; height: 84px; border-radius: 10px; flex-shrink: 0;
   background: var(--surface2); display: flex; align-items: center;
-  justify-content: center; font-size: 28px; overflow: hidden;
+  justify-content: center; font-size: 32px; overflow: hidden;
 }
 .news-content { flex: 1; min-width: 0; }
-.news-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; }
+.news-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
 .news-title {
-  font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700;
-  line-height: 1.35; margin-bottom: 6px;
+  font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700;
+  line-height: 1.35; margin-bottom: 7px;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
-.news-meta { font-size: 11px; color: var(--muted); display: flex; gap: 8px; align-items: center; }
+.news-meta { font-size: 13px; color: var(--muted); display: flex; gap: 8px; align-items: center; }
 .saved-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; display: inline-block; }
 
 /* BOTTOM NAV */
@@ -164,16 +164,16 @@ main { max-width: 480px; margin: 0 auto; padding: 0 0 calc(var(--safe-bottom) + 
   padding: calc(var(--safe-top) + 14px) 16px 14px;
   display: flex; align-items: center; justify-content: space-between;
 }
-.reader-back { display: flex; align-items: center; gap: 6px; font-size: 15px; color: var(--accent); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.reader-back { display: flex; align-items: center; gap: 6px; font-size: 17px; color: var(--accent); cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .reader-body { padding: 24px 20px; max-width: 480px; margin: 0 auto; }
-.reader-tag { display: inline-block; background: var(--accent); color: #000; font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; margin-bottom: 16px; }
-.reader-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; line-height: 1.25; margin-bottom: 12px; }
-.reader-meta { font-size: 13px; color: var(--muted); margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+.reader-tag { display: inline-block; background: var(--accent); color: #000; font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; margin-bottom: 16px; }
+.reader-title { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 900; line-height: 1.25; margin-bottom: 12px; }
+.reader-meta { font-size: 15px; color: var(--muted); margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
 .reader-img { width: 100%; height: 220px; background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 80px; margin-bottom: 24px; }
-.reader-content { font-size: 17px; line-height: 1.7; color: #d0cbc2; font-weight: 300; }
-.reader-content p { margin-bottom: 16px; }
+.reader-content { font-size: var(--reader-font-size, 19px); line-height: 1.75; color: #d0cbc2; font-weight: 300; }
+.reader-content p { margin-bottom: 18px; }
 .reader-actions { display: flex; gap: 12px; margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--border); }
-.btn { flex: 1; padding: 14px; border-radius: 12px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: transform 0.1s, opacity 0.15s; -webkit-tap-highlight-color: transparent; font-family: 'DM Sans', sans-serif; }
+.btn { flex: 1; padding: 14px; border-radius: 12px; border: none; font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.1s, opacity 0.15s; -webkit-tap-highlight-color: transparent; font-family: 'DM Sans', sans-serif; }
 .btn:active { transform: scale(0.96); opacity: 0.85; }
 .btn-primary { background: var(--accent); color: #000; }
 .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
@@ -215,6 +215,36 @@ main { max-width: 480px; margin: 0 auto; padding: 0 0 calc(var(--safe-bottom) + 
 .install-text span { font-size: 12px; color: var(--muted); line-height: 1.4; }
 .install-close { color: var(--muted); font-size: 18px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 
+/* SETTINGS PANEL */
+.settings-overlay {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(10,10,10,0.7); backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+  display: flex; align-items: flex-end;
+}
+.settings-overlay.show { opacity: 1; pointer-events: all; }
+.settings-sheet {
+  background: var(--surface); border-radius: 20px 20px 0 0;
+  border: 1px solid var(--border); width: 100%;
+  padding: 20px 20px calc(var(--safe-bottom) + 20px);
+  transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.33,1,0.68,1);
+  max-width: 480px; margin: 0 auto;
+}
+.settings-overlay.show .settings-sheet { transform: translateY(0); }
+.settings-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 20px; }
+.settings-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; margin-bottom: 24px; }
+.settings-row { margin-bottom: 24px; }
+.settings-label { font-size: 13px; color: var(--muted); font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 12px; }
+.font-controls { display: flex; align-items: center; gap: 16px; }
+.font-btn { width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; -webkit-tap-highlight-color: transparent; }
+.font-btn:active { background: var(--border); }
+.font-preview { flex: 1; text-align: center; font-family: 'Playfair Display', serif; font-size: 17px; }
+.theme-btns { display: flex; gap: 10px; }
+.theme-btn { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); font-size: 14px; font-weight: 500; cursor: pointer; text-align: center; -webkit-tap-highlight-color: transparent; transition: border-color 0.15s, color 0.15s; font-family: 'DM Sans', sans-serif; }
+.theme-btn.active { border-color: var(--accent); color: var(--accent); }
+.settings-close { width: 100%; padding: 14px; border-radius: 12px; background: var(--accent); color: #000; border: none; font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 8px; -webkit-tap-highlight-color: transparent; }
+
 /* TOAST */
 .toast {
   position: fixed; bottom: calc(var(--safe-bottom) + 80px);
@@ -239,7 +269,7 @@ main { max-width: 480px; margin: 0 auto; padding: 0 0 calc(var(--safe-bottom) + 
     <div class="header-actions">
       <button class="icon-btn" onclick="refreshFeed()" title="Aggiorna">⟳</button>
       <button class="icon-btn" id="download-all-btn" onclick="downloadAllOffline()" title="Scarica tutto offline">⬇</button>
-      <button class="icon-btn" onclick="showToast('⚙️ Impostazioni in arrivo')">⚙</button>
+      <button class="icon-btn" onclick="openSettings()">⚙</button>
     </div>
   </div>
 </header>
@@ -277,6 +307,45 @@ main { max-width: 480px; margin: 0 auto; padding: 0 0 calc(var(--safe-bottom) + 
     <div class="dl-bar-wrap"><div class="dl-bar" id="dl-bar"></div></div>
     <div class="dl-count" id="dl-count">0 / 0 articoli</div>
     <button class="dl-close" id="dl-close" onclick="closeDlOverlay()">Fatto ✓</button>
+  </div>
+</div>
+
+<!-- Settings -->
+
+<div class="settings-overlay" id="settings-overlay" onclick="closeSettingsOutside(event)">
+  <div class="settings-sheet">
+    <div class="settings-handle"></div>
+    <div class="settings-title">⚙ Impostazioni</div>
+
+```
+<div class="settings-row">
+  <div class="settings-label">Dimensione testo</div>
+  <div class="font-controls">
+    <button class="font-btn" onclick="changeFontSize(-1)">A−</button>
+    <div class="font-preview" id="font-preview">Normale</div>
+    <button class="font-btn" onclick="changeFontSize(1)">A+</button>
+  </div>
+</div>
+
+<div class="settings-row">
+  <div class="settings-label">Tema</div>
+  <div class="theme-btns">
+    <div class="theme-btn active" id="theme-dark" onclick="setTheme('dark')">🌙 Scuro</div>
+    <div class="theme-btn" id="theme-light" onclick="setTheme('light')">☀️ Chiaro</div>
+    <div class="theme-btn" id="theme-sepia" onclick="setTheme('sepia')">📜 Seppia</div>
+  </div>
+</div>
+
+<div class="settings-row">
+  <div class="settings-label">Dati</div>
+  <div class="theme-btns">
+    <div class="theme-btn" onclick="clearSaved()">🗑 Cancella salvati</div>
+  </div>
+</div>
+
+<button class="settings-close" onclick="closeSettings()">Chiudi</button>
+```
+
   </div>
 </div>
 
@@ -641,7 +710,74 @@ function showToast(msg) {
   toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
 }
 
+// ─── SETTINGS ────────────────────────────────────────────
+const FONT_SIZES = [15, 17, 19, 22, 25];
+const FONT_LABELS = ['Piccolo', 'Medio', 'Normale', 'Grande', 'Enorme'];
+let fontIdx = parseInt(localStorage.getItem('fontIdx') || '2');
+let currentTheme = localStorage.getItem('theme') || 'dark';
+
+const THEMES = {
+  dark:  { '--bg':'#0a0a0a','--surface':'#141414','--surface2':'#1e1e1e','--border':'#2a2a2a','--text':'#f0ece4','--muted':'#888' },
+  light: { '--bg':'#f5f2ec','--surface':'#ffffff','--surface2':'#f0ede6','--border':'#e0dbd0','--text':'#1a1a1a','--muted':'#666' },
+  sepia: { '--bg':'#f4ecd8','--surface':'#ede3c8','--surface2':'#e5d9b6','--border':'#c8b89a','--text':'#3b2d1a','--muted':'#7a6040' },
+};
+
+function applyFontSize() {
+  document.documentElement.style.setProperty('--reader-font-size', FONT_SIZES[fontIdx] + 'px');
+  const preview = document.getElementById('font-preview');
+  if (preview) preview.textContent = FONT_LABELS[fontIdx];
+}
+
+function changeFontSize(dir) {
+  fontIdx = Math.max(0, Math.min(FONT_SIZES.length - 1, fontIdx + dir));
+  localStorage.setItem('fontIdx', fontIdx);
+  applyFontSize();
+}
+
+function applyTheme(name) {
+  const vars = THEMES[name] || THEMES.dark;
+  Object.entries(vars).forEach(([k, v]) => document.documentElement.style.setProperty(k, v));
+  document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('theme-' + name);
+  if (btn) btn.classList.add('active');
+}
+
+function setTheme(name) {
+  currentTheme = name;
+  localStorage.setItem('theme', name);
+  applyTheme(name);
+}
+
+function openSettings() {
+  document.getElementById('settings-overlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  applyFontSize();
+  // Mark active theme button
+  document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('theme-' + currentTheme);
+  if (btn) btn.classList.add('active');
+}
+
+function closeSettings() {
+  document.getElementById('settings-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function closeSettingsOutside(e) {
+  if (e.target === document.getElementById('settings-overlay')) closeSettings();
+}
+
+function clearSaved() {
+  savedIds = [];
+  localStorage.setItem('saved', '[]');
+  closeSettings();
+  renderContent();
+  showToast('🗑 Articoli salvati cancellati');
+}
+
 init();
+applyFontSize();
+applyTheme(currentTheme);
 </script>
 
 </body>
