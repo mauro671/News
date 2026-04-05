@@ -328,6 +328,19 @@ main { max-width: 480px; margin: 0 auto; padding: 0 0 calc(var(--safe-bottom) + 
 </div>
 
 <div class="settings-row">
+  <div class="settings-label">Articoli da mostrare</div>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <input type="range" id="articles-slider" min="10" max="85" step="5"
+      style="flex:1;accent-color:var(--accent);height:4px;cursor:pointer;"
+      oninput="updateArticleLimit(this.value)" />
+    <span id="articles-count-label" style="font-size:18px;font-weight:700;color:var(--accent);min-width:40px;text-align:right;">85</span>
+  </div>
+  <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px;">
+    <span>10</span><span>Tutti</span>
+  </div>
+</div>
+
+<div class="settings-row">
   <div class="settings-label">Tema</div>
   <div class="theme-btns">
     <div class="theme-btn active" id="theme-dark" onclick="setTheme('dark')">🌙 Scuro</div>
@@ -475,9 +488,11 @@ const SAMPLE_ARTICLES = [
 
 let savedIds = JSON.parse(localStorage.getItem('saved') || '[]');
 let cachedArticles = JSON.parse(localStorage.getItem('cached') || 'null') || SAMPLE_ARTICLES;
+let customSources = JSON.parse(localStorage.getItem('sources') || '[]');
 let currentCat = 'Tutto';
 let currentNav = 'home';
 let currentArticle = null;
+let articleLimit = parseInt(localStorage.getItem('articleLimit') || '85');
 
 function init() {
   renderTabs();
@@ -516,7 +531,8 @@ function renderContent() {
 }
 
 function getFiltered() {
-  return currentCat === 'Tutto' ? cachedArticles : cachedArticles.filter(a => a.cat === currentCat);
+  const filtered = currentCat === 'Tutto' ? cachedArticles : cachedArticles.filter(a => a.cat === currentCat);
+  return filtered.slice(0, articleLimit);
 }
 
 function renderHome(area) {
@@ -560,32 +576,83 @@ function renderSaved(area) {
 }
 
 function renderSources(area) {
+  const sourceList = customSources.length
+    ? `<div class="section-title" style="padding:16px 0 10px">Le tue fonti (${customSources.length})</div>
+       <div style="padding:0 0 8px;display:flex;flex-direction:column;gap:8px;">
+         ${customSources.map((s,i) => `
+           <div style="display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;">
+             <span style="font-size:18px">📡</span>
+             <div style="flex:1;min-width:0;">
+               <div style="font-size:14px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${s.name}</div>
+               <div style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${s.url}</div>
+             </div>
+             <span onclick="removeSource(${i})" style="font-size:18px;color:var(--muted);cursor:pointer;padding:4px;">✕</span>
+           </div>`).join('')}
+       </div>`
+    : '';
+
   area.innerHTML = `
     <div class="add-rss-panel">
       <div class="section-title" style="padding:0 0 12px">Aggiungi fonte RSS</div>
-      <div class="rss-input-wrap">
-        <input class="rss-input" id="rss-url" type="url" placeholder="https://esempio.com/feed.rss" />
-        <button class="icon-btn" onclick="addRSS()" style="width:44px;height:44px;border-radius:10px;background:var(--accent);color:#000;border:none;font-size:18px">+</button>
+      <div style="margin-bottom:10px;">
+        <input class="rss-input" id="rss-name" placeholder="Nome fonte (es. ANSA)" style="margin-bottom:8px;width:100%" />
+        <div class="rss-input-wrap">
+          <input class="rss-input" id="rss-url" type="url" placeholder="https://www.ansa.it/sito/notizie/feed.xml" />
+          <button onclick="addRSS()" style="width:44px;height:44px;border-radius:10px;background:var(--accent);color:#000;border:none;font-size:22px;cursor:pointer;flex-shrink:0;">+</button>
+        </div>
       </div>
-      <div class="section-title" style="padding:0 0 10px">Fonti consigliate</div>
+      ${sourceList}
+      <div class="section-title" style="padding:8px 0 10px">Fonti consigliate</div>
       <div class="source-chips">
-        ${['ANSA','Repubblica','Corriere','Il Sole 24 Ore','La Stampa','TechCrunch','Wired IT','BBC News'].map(s =>
-          `<div class="chip" onclick="toggleChip(this,'${s}')">${s}</div>`
-        ).join('')}
+        ${[
+          {name:'ANSA', url:'https://www.ansa.it/sito/notizie/tecnologia/tecnologia_rss.xml'},
+          {name:'Repubblica', url:'https://www.repubblica.it/rss/homepage/rss2.0.xml'},
+          {name:'Corriere', url:'https://xml2.corriereobjects.it/rss/homepage.xml'},
+          {name:'Il Sole 24 Ore', url:'https://www.ilsole24ore.com/rss/italia--mondo.xml'},
+          {name:'BBC News', url:'https://feeds.bbci.co.uk/news/rss.xml'},
+          {name:'Wired IT', url:'https://www.wired.it/feed/rss'},
+          {name:"Tom's Hardware", url:'https://www.tomshw.it/feed'},
+        ].map(s => {
+          const active = customSources.some(cs => cs.url === s.url);
+          return `<div class="chip${active?' active':''}" onclick="addQuickSource('${s.name}','${s.url}')">${s.name}</div>`;
+        }).join('')}
       </div>
     </div>`;
 }
 
 function addRSS() {
-  const val = document.getElementById('rss-url').value.trim();
-  if (!val) return;
-  showToast('📡 Fonte aggiunta! (simulato)');
-  document.getElementById('rss-url').value = '';
+  const nameEl = document.getElementById('rss-name');
+  const urlEl = document.getElementById('rss-url');
+  const name = nameEl.value.trim();
+  const url = urlEl.value.trim();
+  if (!url) { showToast('⚠️ Inserisci un URL'); return; }
+  if (!url.startsWith('http')) { showToast('⚠️ URL non valido'); return; }
+  if (customSources.some(s => s.url === url)) { showToast('⚠️ Fonte già aggiunta'); return; }
+  customSources.push({ name: name || new URL(url).hostname, url });
+  localStorage.setItem('sources', JSON.stringify(customSources));
+  nameEl.value = '';
+  urlEl.value = '';
+  showToast(`✅ Fonte aggiunta!`);
+  renderContent();
 }
 
-function toggleChip(el, src) {
-  el.classList.toggle('active');
-  showToast(el.classList.contains('active') ? `✅ ${src} aggiunto` : `❌ ${src} rimosso`);
+function addQuickSource(name, url) {
+  if (customSources.some(s => s.url === url)) {
+    customSources = customSources.filter(s => s.url !== url);
+    showToast(`❌ ${name} rimosso`);
+  } else {
+    customSources.push({ name, url });
+    showToast(`✅ ${name} aggiunto`);
+  }
+  localStorage.setItem('sources', JSON.stringify(customSources));
+  renderContent();
+}
+
+function removeSource(idx) {
+  const removed = customSources.splice(idx, 1);
+  localStorage.setItem('sources', JSON.stringify(customSources));
+  showToast(`🗑 ${removed[0].name} rimosso`);
+  renderContent();
 }
 
 function openReader(id) {
@@ -768,10 +835,21 @@ function setTheme(name) {
   applyTheme(name);
 }
 
+function updateArticleLimit(val) {
+  articleLimit = parseInt(val);
+  localStorage.setItem('articleLimit', articleLimit);
+  document.getElementById('articles-count-label').textContent = articleLimit >= 85 ? 'Tutti' : articleLimit;
+  renderContent();
+}
+
 function openSettings() {
   document.getElementById('settings-overlay').classList.add('show');
   document.body.style.overflow = 'hidden';
   applyFontSize();
+  // Init slider
+  const slider = document.getElementById('articles-slider');
+  if (slider) { slider.value = articleLimit; }
+  document.getElementById('articles-count-label').textContent = articleLimit >= 85 ? 'Tutti' : articleLimit;
   // Mark active theme button
   document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
   const btn = document.getElementById('theme-' + currentTheme);
