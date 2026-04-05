@@ -245,6 +245,18 @@ main { max-width: 480px; margin: 0 auto; padding: 0 0 calc(var(--safe-bottom) + 
 .theme-btn.active { border-color: var(--accent); color: var(--accent); }
 .settings-close { width: 100%; padding: 14px; border-radius: 12px; background: var(--accent); color: #000; border: none; font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 8px; -webkit-tap-highlight-color: transparent; }
 
+/* RSS STATUS BAR */
+.rss-status {
+  display: none;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+}
+.rss-status.show { display: block; }
+
 /* TOAST */
 .toast {
   position: fixed; bottom: calc(var(--safe-bottom) + 80px);
@@ -262,6 +274,7 @@ main { max-width: 480px; margin: 0 auto; padding: 0 0 calc(var(--safe-bottom) + 
 <body>
 
 <div class="offline-banner">📡 Offline — Stai leggendo articoli salvati</div>
+<div class="rss-status" id="rss-status"></div>
 
 <header>
   <div class="header-inner">
@@ -706,25 +719,36 @@ const RSS_SOURCES = [
   { name:"Tom's Hardware", url:'https://www.tomshw.it/feed', cat:'Tecnologia', emoji:'🖥️' },
 ];
 
+function setStatus(msg) {
+  const el = document.getElementById('rss-status');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.toggle('show', !!msg);
+}
+
 async function fetchRSSSource(source, startId) {
   const proxies = [
     { name:'corsproxy.io', url:`https://corsproxy.io/?url=${encodeURIComponent(source.url)}` },
     { name:'allorigins',   url:`https://api.allorigins.win/raw?url=${encodeURIComponent(source.url)}` },
     { name:'codetabs',     url:`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(source.url)}` },
   ];
-
   for (const proxy of proxies) {
     try {
-      showToast(`⏳ Provo ${proxy.name}…`);
+      setStatus(`⏳ Provo ${proxy.name}…`);
       const res = await fetch(proxy.url);
-      if (!res.ok) { showToast(`❌ ${proxy.name}: HTTP ${res.status}`); continue; }
+      if (!res.ok) { setStatus(`❌ ${proxy.name}: HTTP ${res.status}`); await delay(2000); continue; }
       const text = await res.text();
-      if (!text || text.length < 100) { showToast(`❌ ${proxy.name}: vuoto`); continue; }
-      if (!text.includes('<item>') && !text.includes('<entry>')) { showToast(`❌ ${proxy.name}: no XML`); continue; }
+      if (!text || text.length < 100) { setStatus(`❌ ${proxy.name}: risposta vuota`); await delay(2000); continue; }
+      if (!text.includes('<item>') && !text.includes('<entry>')) { setStatus(`❌ ${proxy.name}: nessun RSS`); await delay(2000); continue; }
       const articles = parseRawXML(text, source, startId);
-      if (articles.length > 0) { showToast(`✅ ${proxy.name}: ${articles.length} art.`); return articles; }
+      if (articles.length > 0) {
+        setStatus(`✅ ${proxy.name}: ${articles.length} articoli!`);
+        setTimeout(() => setStatus(''), 4000);
+        return articles;
+      }
     } catch(e) {
-      showToast(`❌ ${proxy.name}: ${(e.message||'err').slice(0,25)}`);
+      setStatus(`❌ ${proxy.name}: ${(e.message||'errore').slice(0,30)}`);
+      await delay(2000);
     }
   }
   return [];
@@ -768,7 +792,7 @@ async function refreshFeed() {
     return;
   }
   if (!navigator.onLine) { showToast('📡 Offline'); return; }
-  showToast("⟳ Contatto Tom's Hardware…");
+  setStatus("⟳ Contatto Tom's Hardware…");
   try {
     let nextId = 10000;
     const fetched = [];
@@ -780,10 +804,9 @@ async function refreshFeed() {
     cachedArticles = fetched.length > 0 ? [...fetched, ...SAMPLE_ARTICLES] : SAMPLE_ARTICLES;
     localStorage.setItem('cached', JSON.stringify(cachedArticles));
     renderContent();
-    if (fetched.length === 0) showToast('⚠️ Tutti i proxy bloccati');
+    if (fetched.length === 0) setStatus("⚠️ Tutti i proxy bloccati da Tom's Hardware");
   } catch(e) {
-    showToast('⚠️ ' + (e.message?.slice(0,40) || 'errore'));
-    renderContent();
+    setStatus('⚠️ Errore: ' + (e.message?.slice(0,40) || ''));
   }
 }
 
