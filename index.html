@@ -501,6 +501,10 @@ function init() {
   checkOffline();
   window.addEventListener('online', checkOffline);
   window.addEventListener('offline', checkOffline);
+  // Auto-fetch RSS all'avvio se online
+  if (navigator.onLine) {
+    setTimeout(() => refreshFeed(), 800);
+  }
 }
 
 function checkOffline() {
@@ -702,15 +706,114 @@ function shareArticle() {
   }
 }
 
-function refreshFeed() {
+const RSS_PROXIES = [
+  url => `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}&count=20`,
+  url => `https://cors-anywhere.herokuapp.com/${url}`,
+];
+
+const RSS_SOURCES = [
+  { name:"Tom's Hardware", url:'https://www.tomshw.it/feed', cat:'Tecnologia', emoji:'🖥️' },
+];
+
+async function fetchRSSSource(source, startId) {
+  // Prova rss2json prima
+  try {
+    const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}&count=20`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.status === 'ok' && data.items?.length) {
+        return parseRss2JsonItems(data.items, source, startId);
+      }
+    }
+  } catch(e) { console.warn('rss2json failed', e); }
+
+  // Prova fetch diretto con allorigins proxy
+  try {
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(source.url)}`;
+    const res = await fetch(proxyUrl);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.contents) {
+        return parseRawXML(data.contents, source, startId);
+      }
+    }
+  } catch(e) { console.warn('allorigins failed', e); }
+
+  throw new Error('Tutti i proxy hanno fallito');
+}
+
+function parseRss2JsonItems(items, source, startId) {
+  return items.map((item, i) => {
+    const pubDate = new Date(item.pubDate);
+    const hoursAgo = Math.max(1, Math.round((Date.now() - pubDate) / 3600000));
+    const timeStr = hoursAgo < 24 ? `${hoursAgo}h fa` : `${Math.round(hoursAgo/24)}g fa`;
+    const div = document.createElement('div');
+    div.innerHTML = item.description || item.content || '';
+    const bodyText = div.textContent.trim().slice(0, 800) || item.title;
+    return {
+      id: startId + i, cat: source.cat, emoji: source.emoji,
+      title: item.title.trim(), source: source.name,
+      time: timeStr, read: `${Math.max(1, Math.round(bodyText.split(' ').length / 200))} min`,
+      body: bodyText, link: item.link || '',
+    };
+  });
+}
+
+function parseRawXML(xmlStr, source, startId) {
+  const parser = new DOMParser();
+  const xml = parser.parseFromString(xmlStr, 'text/xml');
+  const items = Array.from(xml.querySelectorAll('item')).slice(0, 20);
+  return items.map((item, i) => {
+    const title = item.querySelector('title')?.textContent?.trim() || 'Senza titolo';
+    const desc = item.querySelector('description')?.textContent || '';
+    const pubDate = item.querySelector('pubDate')?.textContent || '';
+    const link = item.querySelector('link')?.textContent || '';
+    const date = pubDate ? new Date(pubDate) : new Date();
+    const hoursAgo = Math.max(1, Math.round((Date.now() - date) / 3600000));
+    const timeStr = hoursAgo < 24 ? `${hoursAgo}h fa` : `${Math.round(hoursAgo/24)}g fa`;
+    const div = document.createElement('div');
+    div.innerHTML = desc;
+    const bodyText = div.textContent.trim().slice(0, 800) || title;
+    return {
+      id: startId + i, cat: source.cat, emoji: source.emoji,
+      title, source: source.name, time: timeStr,
+      read: `${Math.max(1, Math.round(bodyText.split(' ').length / 200))} min`,
+      body: bodyText, link,
+    };
+  });
+}
+
+async function refreshFeed() {
   if (!navigator.onLine) { showToast('📡 Offline — impossibile aggiornare'); return; }
-  showToast('⟳ Aggiornamento in corso…');
-  setTimeout(() => {
+  showToast('⟳ Aggiornamento feed in corso…');
+
+  try {
+    let nextId = 10000;
+    const fetched = [];
+
+    for (const source of RSS_SOURCES) {
+      try {
+        const articles = await fetchRSSSource(source, nextId);
+        fetched.push(...articles);
+        nextId += articles.length;
+      } catch(e) {
+        console.warn('Errore fetch', source.name, e);
+      }
+    }
+
+    // Merge: articoli RSS freschi in cima, sample articles dopo
+    // Rimuovi eventuali vecchi articoli RSS (id >= 10000)
+    const baseArticles = SAMPLE_ARTICLES;
+    cachedArticles = [...fetched, ...baseArticles];
+    localStorage.setItem('cached', JSON.stringify(cachedArticles));
+    renderContent();
+    showToast(`✅ ${fetched.length} nuovi articoli da Tom's Hardware!`);
+  } catch(e) {
     cachedArticles = SAMPLE_ARTICLES;
     localStorage.setItem('cached', JSON.stringify(cachedArticles));
     renderContent();
-    showToast('✅ Feed aggiornato!');
-  }, 1500);
+    showToast('⚠️ Errore aggiornamento — articoli di esempio caricati');
+  }
 }
 
 async function downloadAllOffline() {
