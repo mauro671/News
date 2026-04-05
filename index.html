@@ -708,21 +708,23 @@ const RSS_SOURCES = [
 
 async function fetchRSSSource(source, startId) {
   const proxies = [
-    `https://corsproxy.io/?url=${encodeURIComponent(source.url)}`,
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(source.url)}`,
-    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(source.url)}`,
+    { name:'corsproxy.io', url:`https://corsproxy.io/?url=${encodeURIComponent(source.url)}` },
+    { name:'allorigins',   url:`https://api.allorigins.win/raw?url=${encodeURIComponent(source.url)}` },
+    { name:'codetabs',     url:`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(source.url)}` },
   ];
 
-  for (const proxyUrl of proxies) {
+  for (const proxy of proxies) {
     try {
-      const res = await fetch(proxyUrl);
-      if (!res.ok) continue;
+      showToast(`⏳ Provo ${proxy.name}…`);
+      const res = await fetch(proxy.url);
+      if (!res.ok) { showToast(`❌ ${proxy.name}: HTTP ${res.status}`); continue; }
       const text = await res.text();
-      if (!text || (!text.includes('<item>') && !text.includes('<entry>'))) continue;
+      if (!text || text.length < 100) { showToast(`❌ ${proxy.name}: vuoto`); continue; }
+      if (!text.includes('<item>') && !text.includes('<entry>')) { showToast(`❌ ${proxy.name}: no XML`); continue; }
       const articles = parseRawXML(text, source, startId);
-      if (articles.length > 0) return articles;
+      if (articles.length > 0) { showToast(`✅ ${proxy.name}: ${articles.length} art.`); return articles; }
     } catch(e) {
-      // Silently ignore
+      showToast(`❌ ${proxy.name}: ${(e.message||'err').slice(0,25)}`);
     }
   }
   return [];
@@ -755,8 +757,7 @@ function parseRawXML(xmlStr, source, startId) {
 }
 
 async function refreshFeed() {
-  // Nell'anteprima Claude il fetch esterno è bloccato — mostra solo articoli locali
-  const isPreview = !window.location.hostname || 
+  const isPreview = !window.location.hostname ||
                     window.location.hostname === 'localhost' ||
                     window.location.protocol === 'blob:' ||
                     window.location.href.includes('claude.ai');
@@ -766,8 +767,8 @@ async function refreshFeed() {
     showToast('📰 Anteprima — articoli di esempio');
     return;
   }
-  if (!navigator.onLine) { showToast('📡 Offline — impossibile aggiornare'); return; }
-  showToast('⟳ Aggiornamento in corso…');
+  if (!navigator.onLine) { showToast('📡 Offline'); return; }
+  showToast("⟳ Contatto Tom's Hardware…");
   try {
     let nextId = 10000;
     const fetched = [];
@@ -779,9 +780,9 @@ async function refreshFeed() {
     cachedArticles = fetched.length > 0 ? [...fetched, ...SAMPLE_ARTICLES] : SAMPLE_ARTICLES;
     localStorage.setItem('cached', JSON.stringify(cachedArticles));
     renderContent();
-    showToast(fetched.length > 0 ? `✅ ${fetched.length} articoli caricati!` : '📰 Feed non raggiunto, articoli locali');
+    if (fetched.length === 0) showToast('⚠️ Tutti i proxy bloccati');
   } catch(e) {
-    showToast('📰 Articoli locali caricati');
+    showToast('⚠️ ' + (e.message?.slice(0,40) || 'errore'));
     renderContent();
   }
 }
